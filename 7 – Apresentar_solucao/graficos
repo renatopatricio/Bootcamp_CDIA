@@ -1,0 +1,27 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Métricas obtidas no Passo 6 (resumo das classes de falha)
+models = ["Baseline RF", "RF + SMOTE", "XGBoost Tuned", "Stacking Ensemble"]
+recall = [0.36, 0.58, 0.55, 0.80]
+precision = [0.73, 0.34, 0.35, 0.15]
+f1 = [0.48, 0.43, 0.43, 0.25]
+
+x = np.arange(len(models))
+width = 0.25
+
+fig, ax = plt.subplots(figsize=(10,6))
+
+ax.bar(x - width, recall, width, label='Recall', color='tab:red')
+ax.bar(x, precision, width, label='Precision', color='tab:blue')
+ax.bar(x + width, f1, width, label='F1-score', color='tab:green')
+
+ax.set_ylabel('Scores')
+ax.set_title('Comparação dos Modelos - Classe Falha (1)')
+ax.set_xticks(x)
+ax.set_xticklabels(models, rotation=15)
+ax.legend()
+
+plt.ylim(0,1)
+plt.tight_layout()
+plt.show()
