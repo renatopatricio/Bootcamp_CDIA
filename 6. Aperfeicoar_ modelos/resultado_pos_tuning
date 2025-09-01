@@ -1,0 +1,34 @@
+📊 Resultados Pós-Tuning
+🔹 Random Forest (Tuned)
+Classe 1 (falha)
+Precision: 0.46
+Recall: 0.53
+F1: 0.49
+Acurácia geral: 97.9%
+👉 Bom equilíbrio: melhorou recall em relação ao baseline e manteve acurácia alta.
+
+🔹 XGBoost (Tuned)
+Classe 1 (falha)
+Precision: 0.35
+Recall: 0.55
+F1: 0.43
+Acurácia geral: 97.2%
+👉 Ganhou recall, sacrificando precisão. Útil em cenários onde não perder falhas é prioridade.
+
+🔹 Stacking Ensemble (RF + XGBoost)
+Classe 1 (falha)
+Precision: 0.15
+Recall: 0.80
+F1: 0.25
+Acurácia geral: 91.3%
+👉 Recall explodiu para 80%, mas a precisão caiu muito (muitos falsos positivos). Isso pode ser valioso em casos críticos de manutenção preditiva, onde o custo de uma falha não detectada é enorme.
+
+✅ Conclusões Passo 6
+Random Forest Tunado: melhor opção se a empresa valoriza equilíbrio entre acerto geral e custo dos falsos positivos.
+XGBoost Tunado: ligeiramente melhor em recall, mas menos preciso.
+Stacking Ensemble: se a prioridade máxima for detectar falhas (mesmo com muitos alarmes falsos), é a melhor escolha.
+
+Na prática real:
+
+Para manutenção preditiva em fábricas, geralmente escolhe-se recall alto (não deixar falhas passarem batidas).
+Uma estratégia prática é implementar o Ensemble para monitoramento crítico e, em paralelo, usar o RF Tunado para análises confirmatórias e relatórios.
