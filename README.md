@@ -25,8 +25,7 @@ O objetivo do sistema é:
 ## Tecnologias
 - **Linguagem:** Python 3.8+  
 - **Bibliotecas:** Pandas, NumPy, Matplotlib, Seaborn, Scikit-learn  
-- (Opcional) FastAPI/Flask para API de predição  
-- (Opcional) Streamlit para dashboard interativo  
+- **Streamlit para dashboard interativo  
 
 ## Entregáveis
 - Código-fonte documentado em Python.  
