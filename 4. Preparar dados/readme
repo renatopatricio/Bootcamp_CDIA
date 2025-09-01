@@ -1,1 +1,6 @@
+Preparação dos dados para codificar a preparação + primeiro modelo preditivo.
 
+Saídas Esperadas
+Matriz de confusão → mostrará como o modelo lida com a classe desbalanceada.
+Relatório de classificação → precision, recall, F1.
+Baseline útil mesmo não afinado → já dá ideia se os dados conseguem prever falhas.
