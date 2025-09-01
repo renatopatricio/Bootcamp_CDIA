@@ -1,0 +1,68 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, confusion_matrix
+from imblearn.over_sampling import SMOTE
+from xgboost import XGBClassifier
+
+# 1. Carregar dataset limpo final
+df = pd.read_csv("D:/bootcamp_cdia/projeto_final_2/github/Passo_4 - preparar_dados/dataset_limpo_atualizado.csv")
+
+# Features e target
+X = df[['temperatura_ar','temperatura_processo','umidade_relativa',
+        'velocidade_rotacional','torque','desgaste_da_ferramenta']]
+y = df['falha_maquina']
+
+# 2. Normalização
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# 3. Split treino/teste
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y,
+                                                    test_size=0.3,
+                                                    random_state=42,
+                                                    stratify=y)
+
+results = {}
+
+### ======= Modelo 1: Random Forest com pesos balanceados =======
+rf_balanced = RandomForestClassifier(random_state=42,
+                                     n_estimators=200,
+                                     class_weight='balanced')
+rf_balanced.fit(X_train, y_train)
+y_pred_rf = rf_balanced.predict(X_test)
+results["RandomForest_Balanced"] = {
+    "confusion_matrix": confusion_matrix(y_test, y_pred_rf).tolist(),
+    "classification_report": classification_report(y_test, y_pred_rf, output_dict=True)
+}
+
+### ======= Modelo 2: Random Forest + SMOTE =======
+sm = SMOTE(random_state=42)
+X_train_sm, y_train_sm = sm.fit_resample(X_train, y_train)
+
+rf_smote = RandomForestClassifier(random_state=42, n_estimators=200)
+rf_smote.fit(X_train_sm, y_train_sm)
+y_pred_rf_smote = rf_smote.predict(X_test)
+results["RandomForest_SMOTE"] = {
+    "confusion_matrix": confusion_matrix(y_test, y_pred_rf_smote).tolist(),
+    "classification_report": classification_report(y_test, y_pred_rf_smote, output_dict=True)
+}
+
+### ======= Modelo 3: XGBoost =======
+scale_pos_weight = (y == 0).sum() / (y == 1).sum()  # peso da classe positiva
+
+xgb = XGBClassifier(random_state=42,
+                    n_estimators=300,
+                    learning_rate=0.05,
+                    max_depth=6,
+                    scale_pos_weight=scale_pos_weight,
+                    eval_metric='logloss')
+xgb.fit(X_train, y_train)
+y_pred_xgb = xgb.predict(X_test)
+results["XGBoost"] = {
+    "confusion_matrix": confusion_matrix(y_test, y_pred_xgb).tolist(),
+    "classification_report": classification_report(y_test, y_pred_xgb, output_dict=True)
+}
+
+print(results)
