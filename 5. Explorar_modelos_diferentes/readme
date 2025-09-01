@@ -1,0 +1,6 @@
+Fase para Explorar diferentes modelos e estratégias para lidar com o desbalanceamento, que é justamente o gargalo identificado no baseline (classe minoritária de falhas).
+
+O que esperar dos resultados
+RF Balanced: deve melhorar recall da classe 1, sacrificando um pouco a precisão.
+RF + SMOTE: pode aumentar recall e F1 da classe 1 de forma mais forte, mas risco de overfitting.
+XGBoost: costuma ser o melhor equilíbrio geral entre precisão e recall, especialmente em falhas raras.
