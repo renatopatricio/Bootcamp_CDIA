@@ -1,0 +1,6 @@
+Nesse estágio, saímos do baseline e da exploração inicial, para entrar na parte de ajustes finos, tuning e ensembles, visando melhorar recall e F1 da classe minoritária (falha).
+
+Expectativas no Passo 6
+Random Forest Tunado: deve melhorar recall sem perder tanto em precisão.
+XGBoost Tunado: deve ser mais estável e conseguir recall > 0.6.
+Stacking Ensemble: pode entregar o melhor equilíbrio geral entre alta precisão e recall.
