@@ -1,0 +1,197 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from collections import Counter
+import warnings
+warnings.filterwarnings('ignore')
+
+# Configurar matplotlib
+plt.rcParams['font.size'] = 10
+plt.rcParams['figure.figsize'] = (12, 8)
+
+# Carregar o dataset
+df = pd.read_csv('bootcamp_train.csv')
+
+print("=== ANÁLISE INICIAL DO DATASET ===")
+print(f"Shape: {df.shape}")
+print(f"\nColunas: {list(df.columns)}")
+print(f"\nTipos de dados:")
+print(df.dtypes)
+print(f"\nPrimeiras 5 linhas:")
+print(df.head())
+
+# =====Análise detalhada dos problemas no dataset=====
+
+print("=== PROBLEMAS DETECTADOS ===\n")
+
+# 1. Valores ausentes
+print("1. VALORES AUSENTES:")
+missing_values = df.isnull().sum()
+print(missing_values[missing_values > 0])
+
+# 2. Inconsistências nos rótulos categóricos
+print("\n2. INCONSISTÊNCIAS NOS RÓTULOS:")
+
+categorical_cols = ['falha_maquina', 'FDF (Falha Desgaste Ferramenta)', 
+                   'FDC (Falha Dissipacao Calor)', 'FP (Falha Potencia)', 'FA (Falha Aleatoria)']
+
+for col in categorical_cols:
+    unique_vals = df[col].value_counts()
+    print(f"\n{col}:")
+    print(unique_vals)
+
+# 3. Valores numéricos incoerentes
+print("\n3. VALORES NUMÉRICOS INCOERENTES:")
+
+# Temperatura do ar negativa (fisicamente impossível)
+temp_negativa = df[df['temperatura_ar'] < 0]
+print(f"Temperaturas do ar negativas: {len(temp_negativa)} registros")
+if len(temp_negativa) > 0:
+    print(f"Valores: {temp_negativa['temperatura_ar'].unique()}")
+
+# Verificar outliers extremos
+numeric_cols = ['temperatura_ar', 'temperatura_processo', 'umidade_relativa', 
+                'velocidade_rotacional', 'torque', 'desgaste_da_ferramenta']
+
+print("\nEstatísticas descritivas:")
+print(df[numeric_cols].describe())
+
+# =====Criar visualizações dos problemas detectados=====
+
+# Configurar estilo
+plt.style.use('seaborn-v0_8')
+fig = plt.figure(figsize=(20, 24))
+
+# 1. Gráfico de valores ausentes
+plt.subplot(4, 3, 1)
+missing_data = df.isnull().sum()
+missing_data = missing_data[missing_data > 0]
+bars = plt.bar(range(len(missing_data)), missing_data.values, color='red', alpha=0.7)
+plt.xticks(range(len(missing_data)), missing_data.index, rotation=45, ha='right')
+plt.title('Valores Ausentes por Coluna', fontsize=14, fontweight='bold')
+plt.ylabel('Quantidade de Valores Ausentes')
+for i, v in enumerate(missing_data.values):
+    plt.text(i, v + 10, str(v), ha='center', va='bottom', fontweight='bold')
+
+# 2. Inconsistências em falha_maquina
+plt.subplot(4, 3, 2)
+falha_counts = df['falha_maquina'].value_counts()
+colors = ['lightcoral' if val in ['não', 'Não', 'N', '0'] else 'lightblue' if val in ['sim', 'Sim', 'y', '1'] else 'orange' 
+          for val in falha_counts.index]
+bars = plt.bar(range(len(falha_counts)), falha_counts.values, color=colors, alpha=0.8)
+plt.xticks(range(len(falha_counts)), falha_counts.index, rotation=45)
+plt.title('Inconsistências em "falha_maquina"', fontsize=14, fontweight='bold')
+plt.ylabel('Frequência')
+for i, v in enumerate(falha_counts.values):
+    plt.text(i, v + 100, str(v), ha='center', va='bottom', fontsize=9)
+
+# 3. Temperaturas negativas (problema físico)
+plt.subplot(4, 3, 3)
+temp_data = df['temperatura_ar'].dropna()
+plt.hist(temp_data, bins=50, alpha=0.7, color='skyblue', edgecolor='black')
+plt.axvline(x=0, color='red', linestyle='--', linewidth=2, label='Temperatura = 0°C')
+plt.title('Distribuição de Temperatura do Ar\n(Valores Negativos são Incoerentes)', fontsize=14, fontweight='bold')
+plt.xlabel('Temperatura do Ar (°C)')
+plt.ylabel('Frequência')
+plt.legend()
+
+# 4. Inconsistências em FDF
+plt.subplot(4, 3, 4)
+fdf_counts = df['FDF (Falha Desgaste Ferramenta)'].value_counts()
+colors = ['lightgreen' if val == 'False' else 'red' if val == 'True' else 'orange' for val in fdf_counts.index]
+bars = plt.bar(range(len(fdf_counts)), fdf_counts.values, color=colors, alpha=0.8)
+plt.xticks(range(len(fdf_counts)), fdf_counts.index, rotation=45)
+plt.title('Inconsistências em "FDF"', fontsize=14, fontweight='bold')
+plt.ylabel('Frequência')
+for i, v in enumerate(fdf_counts.values):
+    plt.text(i, v + 200, str(v), ha='center', va='bottom', fontsize=9)
+
+# 5. Desgaste da ferramenta negativo
+plt.subplot(4, 3, 5)
+desgaste_data = df['desgaste_da_ferramenta'].dropna()
+plt.hist(desgaste_data, bins=50, alpha=0.7, color='lightcoral', edgecolor='black')
+plt.axvline(x=0, color='red', linestyle='--', linewidth=2, label='Desgaste = 0')
+plt.title('Distribuição de Desgaste da Ferramenta\n(Valores Negativos são Incoerentes)', fontsize=14, fontweight='bold')
+plt.xlabel('Desgaste da Ferramenta')
+plt.ylabel('Frequência')
+plt.legend()
+
+# 6. Velocidade rotacional negativa
+plt.subplot(4, 3, 6)
+vel_data = df['velocidade_rotacional'].dropna()
+plt.hist(vel_data, bins=50, alpha=0.7, color='lightgreen', edgecolor='black')
+plt.axvline(x=0, color='red', linestyle='--', linewidth=2, label='Velocidade = 0')
+plt.title('Distribuição de Velocidade Rotacional\n(Valores Negativos são Incoerentes)', fontsize=14, fontweight='bold')
+plt.xlabel('Velocidade Rotacional (RPM)')
+plt.ylabel('Frequência')
+plt.legend()
+
+# 7. Inconsistências em FDC
+plt.subplot(4, 3, 7)
+fdc_counts = df['FDC (Falha Dissipacao Calor)'].value_counts()
+colors = ['lightgreen' if val == 'False' else 'red' if val == 'True' else 'orange' for val in fdc_counts.index]
+bars = plt.bar(range(len(fdc_counts)), fdc_counts.values, color=colors, alpha=0.8)
+plt.xticks(range(len(fdc_counts)), fdc_counts.index, rotation=45)
+plt.title('Inconsistências em "FDC"', fontsize=14, fontweight='bold')
+plt.ylabel('Frequência')
+for i, v in enumerate(fdc_counts.values):
+    plt.text(i, v + 200, str(v), ha='center', va='bottom', fontsize=9)
+
+# 8. Inconsistências em FP
+plt.subplot(4, 3, 8)
+fp_counts = df['FP (Falha Potencia)'].value_counts()
+colors = ['lightcoral' if val in ['não', 'Não', 'N', '0'] else 'lightblue' if val in ['sim', 'Sim', 'y', '1'] else 'orange' 
+          for val in fp_counts.index]
+bars = plt.bar(range(len(fp_counts)), fp_counts.values, color=colors, alpha=0.8)
+plt.xticks(range(len(fp_counts)), fp_counts.index, rotation=45)
+plt.title('Inconsistências em "FP"', fontsize=14, fontweight='bold')
+plt.ylabel('Frequência')
+for i, v in enumerate(fp_counts.values):
+    plt.text(i, v + 100, str(v), ha='center', va='bottom', fontsize=9)
+
+# 9. Inconsistências em FA
+plt.subplot(4, 3, 9)
+fa_counts = df['FA (Falha Aleatoria)'].value_counts()
+colors = ['lightcoral' if val in ['não', 'Não', '0'] else 'lightblue' if val in ['sim', 'Sim', '1'] else 'orange' 
+          for val in fa_counts.index]
+bars = plt.bar(range(len(fa_counts)), fa_counts.values, color=colors, alpha=0.8)
+plt.xticks(range(len(fa_counts)), fa_counts.index, rotation=45)
+plt.title('Inconsistências em "FA"', fontsize=14, fontweight='bold')
+plt.ylabel('Frequência')
+for i, v in enumerate(fa_counts.values):
+    plt.text(i, v + 100, str(v), ha='center', va='bottom', fontsize=9)
+
+# 10. Mapa de calor dos valores ausentes
+plt.subplot(4, 3, 10)
+missing_matrix = df.isnull()
+sns.heatmap(missing_matrix.iloc[:1000], cbar=True, yticklabels=False, 
+            cmap='Reds', xticklabels=True)
+plt.title('Mapa de Calor - Valores Ausentes\n(Primeiros 1000 registros)', fontsize=14, fontweight='bold')
+plt.xticks(rotation=45, ha='right')
+
+# 11. Boxplot para detectar outliers extremos
+plt.subplot(4, 3, 11)
+outlier_cols = ['temperatura_ar', 'velocidade_rotacional', 'desgaste_da_ferramenta']
+df_outliers = df[outlier_cols].copy()
+# Normalizar para visualização
+for col in outlier_cols:
+    df_outliers[col] = (df_outliers[col] - df_outliers[col].mean()) / df_outliers[col].std()
+
+plt.boxplot([df_outliers[col].dropna() for col in outlier_cols], 
+            labels=['Temp. Ar', 'Vel. Rotacional', 'Desgaste'])
+plt.title('Outliers Extremos (Normalizados)', fontsize=14, fontweight='bold')
+plt.ylabel('Valores Padronizados')
+plt.xticks(rotation=45)
+
+# 12. Distribuição dos tipos de produto
+plt.subplot(4, 3, 12)
+tipo_counts = df['tipo'].value_counts()
+plt.pie(tipo_counts.values, labels=tipo_counts.index, autopct='%1.1f%%', 
+        colors=['lightblue', 'lightcoral', 'lightgreen'])
+plt.title('Distribuição dos Tipos de Produto', fontsize=14, fontweight='bold')
+
+plt.tight_layout()
+plt.suptitle('ANÁLISE DE PROBLEMAS NO DATASET - BOOTCAMP TRAIN', 
+             fontsize=16, fontweight='bold', y=0.98)
+plt.show()
