@@ -13,7 +13,6 @@ O objetivo do sistema é:
 
 ## Dados
 - **Bootcamp_train.csv:** usado para exploração, treinamento e avaliação.  
-- **Bootcamp_test.csv:** sem rótulos, utilizado para geração de previsões e avaliação final.
 
 ## Abordagem
 1. **Análise Exploratória de Dados (EDA):** investigação inicial e tratamento de inconsistências.  
