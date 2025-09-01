@@ -1,0 +1,35 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, confusion_matrix
+
+# Carregar o dataset limpo salvo
+df = pd.read_csv("dataset_limpo_atualizado.csv")
+
+# Features e Target
+X = df[['temperatura_ar','temperatura_processo','umidade_relativa',
+        'velocidade_rotacional','torque','desgaste_da_ferramenta']]
+y = df['falha_maquina']
+
+# Normalização
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Split treino/teste
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y,
+                                                    test_size=0.3,
+                                                    random_state=42,
+                                                    stratify=y)
+
+# Modelo baseline
+clf = RandomForestClassifier(random_state=42, n_estimators=200)
+clf.fit(X_train, y_train)
+
+# Avaliação
+y_pred = clf.predict(X_test)
+results = {
+    "confusion_matrix": confusion_matrix(y_test, y_pred).tolist(),
+    "classification_report": classification_report(y_test, y_pred, output_dict=True)
+}
+results
