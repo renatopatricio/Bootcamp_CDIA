@@ -1,0 +1,63 @@
+
+Esse é o momento de transformar todo o trabalho técnico em insights claros e acionáveis para stakeholders (gestores, engenheiros, área de negócio).
+
+📊 Resumo dos Resultados
+Objetivo:
+
+Prever falhas em máquinas industriais a partir de dados de sensores (temperatura, torque, velocidade, desgaste da ferramenta etc.), visando reduzir paradas não planejadas e otimizar manutenção preditiva.
+
+Modelos testados:
+
+Baseline (Random Forest)
+
+Recall da classe falha: 35%
+Acurácia geral: ~98% (mas enganosa, já que maioria dos dados não tem falha)
+
+Random Forest Balanced
+
+Recall: ~27% (não ajudou muito na minoria)
+
+Random Forest + SMOTE
+
+Recall: 58%
+Mais sensível a falhas, custo = mais falsos positivos.
+
+XGBoost Tunado
+
+Recall: 55%, F1 ~0.42
+Sacrificou precisão para aumentar recall.
+
+Stacking (Ensemble)
+
+Recall: 80% (detecção de falhas muito elevada)
+Precisão caiu (mais falsos alarmes)
+Acurácia geral: ~91%
+🎯 Interpretação para Stakeholders
+Baseline era insuficiente → Detectava poucas falhas, considerado ruim para manutenção preditiva.
+SMOTE e XGBoost melhoraram recall → Mais falhas foram corretamente previstas, mesmo com perda de precisão.
+Ensemble final trouxe recall de 80% → A solução mais efetiva quando o custo de não prever uma falha é muito maior que o custo de falsos alarmes.
+
+Exemplo prático:
+
+Se uma máquina parar sem aviso → custo = $$$ alto (produção perdida, manutenção de emergência).
+Se houver alguns falsos alarmes → custo = menor (checagem do equipamento).
+Portanto: Vale a pena priorizar recall alto.
+📌 Benefícios da Solução
+Redução de paradas não planejadas (até 50% segundo benchmarks reais do setor).
+Diminuição de custos de manutenção corretiva (10–40%).
+Maior confiabilidade operacional.
+Base sólida para manutenção preditiva na indústria 4.0.
+📊 Forma de Apresentação recomendada
+
+Para levar aos stakeholders podemos montar:
+
+Gráficos de métricas
+Comparação de recall/precisão entre modelos.
+Evolução do recall (35% → 80%).
+Curva Precision–Recall para mostrar trade-off.
+Business Impact em números: custos evitados estimados × custo de falsos alarmes.
+Dashboard simples em Power BI/Streamlit para operacionalizar resultados em tempo real.
+
+✅ Conclusão do Passo 7:
+A solução encontra falhas com alta eficácia após tuning e ensemble. O modelo recomendado é o Stacking Ensemble, pois privilegia recall (detectar falhas), correspondendo ao objetivo da manutenção preditiva.
+
