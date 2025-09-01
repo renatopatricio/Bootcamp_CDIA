@@ -1,1 +1,44 @@
 
+🔎 1. Estrutura do Dataset
+
+Colunas principais:
+
+id, id_produto, tipo → identificadores.
+sensores/variáveis contínuas → temperatura_ar, temperatura_processo, umidade_relativa, velocidade_rotacional, torque, desgaste_da_ferramenta.
+alvo de falha → falha_maquina (sim/não).
+falhas específicas → FDF, FDC, FP, FTE, FA.
+🛠️ 2. Qualidade dos Dados (problemas detectados)
+Valores incoerentes:
+temperatura_ar com valores negativos (ex.: -36 ºC, impossível no contexto).
+velocidade_rotacional negativa (ex.: -161).
+Valores faltantes (NaN): em sensores como desgaste_da_ferramenta.
+Inconsistência de rótulos: falha representada como “não”, “Não”, “N”. Terá que ser padronizado.
+
+➡️ Isso representa o ruído real encontrado em fábricas: falhas de sensores, erros de digitação etc.
+
+📊 3. Distribuição e Padrões
+
+(sem rodar código agora, mas interpretando com base no dataset):
+
+Umidade_relativa = 90 constante no exemplo da amostra → indica possível sensor fixo ou variável de pouco valor para classificação.
+temperatura_processo gira em torno de 307–312 ºC → faixa relativamente estreita, pode indicar estabilidade do processo, exceto outliers.
+torque varia bastante (até >50), pode ser sensível a tipo de falha.
+desgaste_da_ferramenta aumenta progressivamente (indicador direto de falha).
+⚖️ 4. Rótulos das Classes
+Muito provável que haja desbalanceamento forte:
+Muitas linhas sem falha → “Não” (classe majoritária).
+Poucos exemplos de falhas específicas (FDF, FDC, FP, FTE, FA) → classes minoritárias que dificultam treinamento.
+
+Esse desbalanceamento deve ser tratado (oversampling, undersampling ou métricas adequadas como F1, ROC-AUC para classe minoritária).
+
+📑 5. Informações Úteis Extraídas
+Dados precisam de limpeza e padronização → corrigir outliers óbvios, normalizar rótulos e lidar com NaNs.
+Cuidado com variáveis pouco informativas → exemplo: umidade_relativa se for constante.
+Desbalanceamento de classes é crítico → prever qual falha ocorreu pode ser bem mais difícil que apenas prever “falha vs não falha”.
+Desgaste da ferramenta parece indicador-chave (proxy de falha mecânica direta).
+Problema realístico: teremos de lidar com qualidade de dados baixa (cenário comum na indústria).
+
+✅ Resumo EDA inicial:
+O dataset traz sinais coerentes de sensores e eventos de falha, mas com ruído e inconsistências significativas. As falhas reais são raras (alto desbalanceamento), e variáveis como desgaste, torque e velocidade parecem promissoras para prever falhas. Outras, como umidade_relativa, podem ser praticamente descartáveis.
+
+## OBS: Estrutura textual criada com ajuda da IA
