@@ -1,3 +1,1 @@
-Aqui, a ideia é entender qualidade, distribuição, padrões e problemas nos dados.
 
-O dataset traz sinais coerentes de sensores e eventos de falha, mas com ruído e inconsistências significativas. As falhas reais são raras (alto desbalanceamento), e variáveis como desgaste, torque e velocidade parecem promissoras para prever falhas. Outras, como umidade_relativa, podem ser praticamente descartáveis.
